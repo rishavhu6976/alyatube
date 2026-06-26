@@ -4,51 +4,38 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 <title>ALYA Tube</title>
-<!-- Telegram Mini App SDK -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  --bg:         #0d0d12;
-  --surface:    #15151e;
-  --surface2:   #1c1c28;
-  --surface3:   #242434;
-  --border:     #2a2a3d;
-  --accent:     #c084fc;   /* lilac-purple — matches Alya's hair vibe */
-  --accent2:    #a855f7;
-  --accent-glow:rgba(192,132,252,0.18);
-  --red:        #f87171;
-  --text:       #f0f0f8;
-  --muted:      #7070a0;
-  --muted2:     #4a4a6a;
-  --radius:     12px;
-  --tg-theme-bg-color: #0d0d12;
+  --bg:#0d0d12;--surface:#15151e;--surface2:#1c1c28;--surface3:#242434;
+  --border:#2a2a3d;--accent:#c084fc;--accent2:#a855f7;
+  --accent-glow:rgba(192,132,252,0.18);--red:#f87171;
+  --text:#f0f0f8;--muted:#7070a0;--muted2:#4a4a6a;
+  --radius:12px;--tg-theme-bg-color:#0d0d12;
 }
-
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;-webkit-font-smoothing:antialiased;}
-
-/* ── Scrollbar ── */
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
 
-/* ── Header ── */
+/* HEADER */
 header{
   display:flex;align-items:center;justify-content:space-between;
   padding:10px 16px;
-  background:rgba(13,13,18,0.92);
+  background:rgba(13,13,18,0.95);
   backdrop-filter:blur(12px);
   border-bottom:1px solid var(--border);
   position:sticky;top:0;z-index:200;
+  height:52px;
 }
 .logo{display:flex;align-items:center;gap:9px;text-decoration:none;}
 .logo-mark{
   width:34px;height:24px;
   background:linear-gradient(135deg,var(--accent2) 0%,#7c3aed 100%);
-  border-radius:7px;
-  display:flex;align-items:center;justify-content:center;
+  border-radius:7px;display:flex;align-items:center;justify-content:center;
   box-shadow:0 0 12px rgba(168,85,247,0.4);
 }
 .logo-mark svg{fill:white;width:14px;height:14px;}
@@ -58,160 +45,147 @@ header{
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
   letter-spacing:-0.3px;
 }
-.logo-sub{
-  font-size:9px;font-weight:600;
-  color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;
-  margin-top:-2px;
-}
-
-/* header right side */
+.logo-sub{font-size:9px;font-weight:600;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:-2px;}
 .header-right{display:flex;align-items:center;gap:8px;}
 .icon-btn{
   width:34px;height:34px;border-radius:50%;
   background:var(--surface2);border:1px solid var(--border);
   display:flex;align-items:center;justify-content:center;cursor:pointer;
-  transition:background .15s;
-  text-decoration:none;
+  transition:background .15s;text-decoration:none;
 }
 .icon-btn:hover{background:var(--surface3);}
 .icon-btn svg{fill:var(--muted);width:16px;height:16px;}
 
-/* ── States ── */
+/* STATES */
 #loading-screen,#error-screen{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   min-height:80vh;gap:16px;padding:24px;text-align:center;
 }
 .spinner{
-  width:42px;height:42px;
-  border:3px solid var(--border);border-top-color:var(--accent);
+  width:42px;height:42px;border:3px solid var(--border);border-top-color:var(--accent);
   border-radius:50%;animation:spin .75s linear infinite;
 }
 @keyframes spin{to{transform:rotate(360deg);}}
 .loading-label{color:var(--muted);font-size:13px;letter-spacing:.3px;}
-
 .error-emoji{font-size:52px;line-height:1;}
 .error-title{font-size:20px;font-weight:700;color:var(--red);}
 .error-body{font-size:13px;color:var(--muted);max-width:280px;line-height:1.7;}
 
-/* ── Main ── */
-main{max-width:820px;margin:0 auto;padding:0 0 56px;}
+/* LAYOUT: 2-col on wide, stacked on mobile */
+#player-ui{display:block;}
+.page-layout{
+  display:flex;
+  gap:0;
+  max-width:1280px;
+  margin:0 auto;
+  padding-bottom:72px;
+}
+.main-col{flex:1;min-width:0;}
+.sidebar-col{
+  width:380px;
+  flex-shrink:0;
+  border-left:1px solid var(--border);
+  padding:12px 12px 12px 12px;
+}
 
-/* ── Video wrap ── */
+/* VIDEO WRAP */
 .video-wrap{
   position:relative;background:#000;
-  aspect-ratio:16/9;width:100%;
-  overflow:hidden;
+  aspect-ratio:16/9;width:100%;overflow:hidden;
 }
-/* Thumb overlay */
 #thumb-overlay{
   position:absolute;inset:0;
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;z-index:2;
 }
-#thumb-img{
-  position:absolute;inset:0;width:100%;height:100%;
-  object-fit:cover;transition:filter .25s;
-}
+#thumb-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:filter .25s;}
 #thumb-overlay:hover #thumb-img{filter:brightness(.75);}
 .thumb-gradient{
   position:absolute;inset:0;
-  background:linear-gradient(0deg,rgba(13,13,18,.7) 0%,transparent 50%);
-  z-index:1;
+  background:linear-gradient(0deg,rgba(13,13,18,.7) 0%,transparent 50%);z-index:1;
 }
 .play-ring{
-  position:relative;z-index:2;
-  width:72px;height:72px;border-radius:50%;
-  background:rgba(192,132,252,0.15);
-  border:2px solid rgba(192,132,252,0.5);
-  display:flex;align-items:center;justify-content:center;
-  backdrop-filter:blur(4px);
+  position:relative;z-index:2;width:72px;height:72px;border-radius:50%;
+  background:rgba(192,132,252,0.15);border:2px solid rgba(192,132,252,0.5);
+  display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);
   transition:transform .18s,background .18s,border-color .18s;
 }
-#thumb-overlay:hover .play-ring{
-  transform:scale(1.08);
-  background:rgba(192,132,252,0.28);
-  border-color:var(--accent);
-}
+#thumb-overlay:hover .play-ring{transform:scale(1.08);background:rgba(192,132,252,0.28);border-color:var(--accent);}
 .play-ring svg{fill:white;width:30px;height:30px;margin-left:4px;}
 #thumb-overlay.gone{display:none;}
+#video-player{width:100%;height:100%;display:block;object-fit:contain;background:#000;}
 
-#video-player{
-  width:100%;height:100%;display:block;
-  object-fit:contain;background:#000;
+/* AUDIO CARD */
+.audio-card{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:24px 20px;display:flex;align-items:center;gap:16px;
 }
-#audio-player-wrap{display:none;}
+.audio-icon{font-size:44px;line-height:1;flex-shrink:0;}
+.audio-card audio{flex:1;min-width:0;accent-color:var(--accent);}
 
-/* ── Below video ── */
-.below{padding:14px 16px 0;}
-
-/* Title */
-.vid-title{
-  font-size:17px;font-weight:700;line-height:1.35;
-  margin-bottom:10px;color:var(--text);
+/* FILE CARD */
+.file-card{
+  background:var(--surface);padding:32px 24px;
+  text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;
+  border-bottom:1px solid var(--border);
+}
+.file-icon-big{font-size:56px;line-height:1;}
+.file-name-big{font-size:18px;font-weight:700;color:var(--text);}
+.file-type-tag{
+  background:var(--surface3);border:1px solid var(--border);border-radius:6px;
+  padding:3px 10px;font-size:11px;color:var(--muted);
+  letter-spacing:1px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;
 }
 
-/* Meta pills row */
-.meta-row{
-  display:flex;align-items:center;flex-wrap:wrap;gap:6px;
-  margin-bottom:14px;
-}
+/* BELOW VIDEO AREA */
+.below{padding:12px 16px 0;}
+.vid-title{font-size:16px;font-weight:700;line-height:1.35;margin-bottom:8px;color:var(--text);}
+.meta-row{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
 .meta-pill{
   display:flex;align-items:center;gap:4px;
   background:var(--surface2);border:1px solid var(--border);
-  border-radius:20px;padding:4px 10px;
-  font-size:11.5px;color:var(--muted);
+  border-radius:20px;padding:4px 10px;font-size:11px;color:var(--muted);
   font-family:'JetBrains Mono',monospace;
 }
-.meta-pill svg{fill:var(--muted);width:12px;height:12px;flex-shrink:0;}
+.meta-pill svg{fill:var(--muted);width:11px;height:11px;flex-shrink:0;}
 .meta-pill b{color:var(--text);font-weight:500;}
+.divider{height:1px;background:var(--border);margin:0 0 10px;}
 
-/* divider */
-.divider{height:1px;background:var(--border);margin:0 0 14px;}
-
-/* ── Channel card ── */
-.channel-card{
-  display:flex;align-items:center;gap:12px;
-  margin-bottom:14px;
-}
+/* CHANNEL CARD */
+.channel-card{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
 .ch-avatar{
-  width:42px;height:42px;border-radius:50%;flex-shrink:0;
+  width:40px;height:40px;border-radius:50%;flex-shrink:0;
   background:linear-gradient(135deg,var(--accent2) 0%,#7c3aed 50%,#db2777 100%);
   display:flex;align-items:center;justify-content:center;
-  font-size:18px;font-weight:800;color:white;
-  box-shadow:0 0 0 2px var(--accent-glow);
-  overflow:hidden;
+  font-size:17px;font-weight:800;color:white;
+  box-shadow:0 0 0 2px var(--accent-glow);overflow:hidden;
 }
 .ch-avatar img{width:100%;height:100%;object-fit:cover;}
 .ch-info{flex:1;min-width:0;}
-.ch-name{font-size:14px;font-weight:700;color:var(--text);}
-.ch-sub{font-size:12px;color:var(--muted);margin-top:1px;}
+.ch-name{font-size:13px;font-weight:700;color:var(--text);}
+.ch-sub{font-size:11px;color:var(--muted);margin-top:1px;}
 .subscribe-btn{
   display:flex;align-items:center;gap:6px;
   background:var(--accent2);color:white;
-  border:none;border-radius:20px;padding:7px 16px;
-  font-size:13px;font-weight:700;font-family:'Outfit',sans-serif;
+  border:none;border-radius:20px;padding:7px 14px;
+  font-size:12px;font-weight:700;font-family:'Outfit',sans-serif;
   cursor:pointer;text-decoration:none;
-  transition:background .15s,transform .1s;
-  white-space:nowrap;
+  transition:background .15s;white-space:nowrap;
 }
-.subscribe-btn:hover{background:var(--accent);transform:translateY(-1px);}
-.subscribe-btn svg{fill:white;width:14px;height:14px;}
+.subscribe-btn:hover{background:var(--accent);}
+.subscribe-btn svg{fill:white;width:13px;height:13px;}
 
-/* ── Action bar ── */
-.action-bar{
-  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;
-}
+/* ACTION BAR */
+.action-bar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px;}
 .act-btn{
-  display:flex;align-items:center;gap:6px;
+  display:flex;align-items:center;gap:5px;
   background:var(--surface2);border:1px solid var(--border);
-  color:var(--text);border-radius:20px;padding:8px 16px;
-  font-size:13px;font-weight:600;font-family:'Outfit',sans-serif;
-  cursor:pointer;text-decoration:none;
-  transition:background .15s,border-color .15s;
-  white-space:nowrap;
+  color:var(--text);border-radius:20px;padding:7px 14px;
+  font-size:12px;font-weight:600;font-family:'Outfit',sans-serif;
+  cursor:pointer;text-decoration:none;transition:background .15s,border-color .15s;white-space:nowrap;
 }
 .act-btn:hover{background:var(--surface3);border-color:var(--accent);}
-.act-btn svg{fill:var(--text);width:15px;height:15px;}
+.act-btn svg{fill:var(--text);width:14px;height:14px;}
 .act-btn.primary{
   background:linear-gradient(90deg,var(--accent2),#7c3aed);
   border-color:transparent;color:white;
@@ -220,66 +194,105 @@ main{max-width:820px;margin:0 auto;padding:0 0 56px;}
 .act-btn.primary svg{fill:white;}
 .act-btn.primary:hover{filter:brightness(1.1);}
 
-/* ── Description ── */
+/* DESCRIPTION */
 .desc-card{
   background:var(--surface2);border:1px solid var(--border);
-  border-radius:var(--radius);padding:14px;
-  margin-bottom:14px;
+  border-radius:var(--radius);padding:12px;margin-bottom:10px;
 }
-.desc-label{
-  font-size:10px;font-weight:700;color:var(--accent);
-  letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px;
-}
-.desc-text{font-size:13.5px;color:var(--muted);line-height:1.7;}
+.desc-label{font-size:10px;font-weight:700;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.desc-text{font-size:13px;color:var(--muted);line-height:1.7;}
 
-/* ── Non-video card ── */
-.file-card{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius);padding:32px 24px;
-  text-align:center;margin:0;
-  display:flex;flex-direction:column;align-items:center;gap:12px;
-}
-.file-icon-big{font-size:56px;line-height:1;}
-.file-name-big{font-size:18px;font-weight:700;color:var(--text);}
-.file-type-tag{
-  background:var(--surface3);border:1px solid var(--border);
-  border-radius:6px;padding:3px 10px;
-  font-size:11px;color:var(--muted);
+/* ── RECOMMENDATIONS ── */
+.recs-section{padding:0 16px 16px;}
+
+/* Sidebar heading */
+.recs-heading{
+  font-size:13px;font-weight:700;color:var(--muted);
   letter-spacing:1px;text-transform:uppercase;
-  font-family:'JetBrains Mono',monospace;
+  margin-bottom:10px;display:flex;align-items:center;gap:8px;
+}
+.recs-heading::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* Grid: 2 cols on narrow (below video), 1 col in sidebar */
+.recs-grid-below{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.recs-grid-sidebar{display:flex;flex-direction:column;gap:8px;}
+
+/* Card styles */
+.rec-card{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;overflow:hidden;cursor:pointer;
+  text-decoration:none;display:block;
+  transition:border-color .2s,transform .15s;
+  position:relative;
+}
+.rec-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.rec-card:active{transform:scale(0.98);}
+
+/* Thumbnail */
+.rec-thumb{
+  position:relative;width:100%;
+  background:var(--surface3);overflow:hidden;
+}
+.recs-grid-below .rec-thumb{aspect-ratio:16/9;}
+.recs-grid-sidebar .rec-thumb{aspect-ratio:16/9;width:100%;}
+.rec-thumb-img{width:100%;height:100%;object-fit:cover;display:block;}
+.rec-thumb-placeholder{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  background:var(--surface3);
+}
+.rec-thumb-placeholder svg{fill:var(--muted2);width:28px;height:28px;}
+.rec-play-badge{
+  position:absolute;bottom:5px;right:5px;
+  background:rgba(13,13,18,0.82);
+  border-radius:4px;padding:2px 5px;
+  font-size:10px;color:white;font-family:'JetBrains Mono',monospace;
+}
+.rec-type-badge{
+  position:absolute;top:5px;left:5px;
+  background:rgba(168,85,247,0.85);
+  border-radius:4px;padding:2px 6px;
+  font-size:9px;color:white;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
 }
 
-/* ── Audio player ── */
-.audio-card{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:0;padding:24px 20px;
-  display:flex;align-items:center;gap:16px;
+/* Card info */
+.rec-info{padding:8px 10px 10px;}
+.rec-title{
+  font-size:12px;font-weight:600;color:var(--text);
+  line-height:1.4;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  margin-bottom:4px;
 }
-.audio-icon{font-size:44px;line-height:1;flex-shrink:0;}
-.audio-card audio{flex:1;min-width:0;accent-color:var(--accent);}
+.rec-meta{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:5px;}
+.rec-meta-dot{width:2px;height:2px;border-radius:50%;background:var(--muted2);}
 
-/* ── Bottom nav (YT style) ── */
-.bottom-nav{
-  position:fixed;bottom:0;left:0;right:0;
-  background:rgba(13,13,18,0.96);
-  backdrop-filter:blur(12px);
-  border-top:1px solid var(--border);
-  display:flex;justify-content:space-around;align-items:center;
-  padding:6px 0 calc(6px + env(safe-area-inset-bottom));
-  z-index:100;
-}
-.nav-item{
-  display:flex;flex-direction:column;align-items:center;gap:3px;
-  color:var(--muted2);font-size:10px;font-weight:600;
-  text-decoration:none;letter-spacing:.3px;
-  padding:4px 12px;cursor:pointer;
-  transition:color .15s;
-}
-.nav-item svg{fill:var(--muted2);width:20px;height:20px;transition:fill .15s;}
-.nav-item.active{color:var(--accent);}
-.nav-item.active svg{fill:var(--accent);}
+/* Sidebar card is horizontal */
+.recs-grid-sidebar .rec-card{display:flex;flex-direction:row;border-radius:8px;}
+.recs-grid-sidebar .rec-thumb{width:140px;min-width:140px;aspect-ratio:16/9;}
+.recs-grid-sidebar .rec-info{padding:6px 8px;display:flex;flex-direction:column;justify-content:center;flex:1;min-width:0;}
+.recs-grid-sidebar .rec-title{font-size:11.5px;-webkit-line-clamp:3;}
 
-/* ── Toasts ── */
+/* Loading skeleton */
+.rec-skeleton{
+  background:var(--surface2);border:1px solid var(--border);border-radius:10px;overflow:hidden;
+}
+.skeleton-thumb{background:var(--surface3);aspect-ratio:16/9;position:relative;overflow:hidden;}
+.skeleton-thumb::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.03) 50%,transparent 100%);
+  animation:shimmer 1.4s infinite;
+}
+@keyframes shimmer{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
+.skeleton-line{background:var(--surface3);border-radius:4px;margin:8px 10px;}
+.skeleton-line.h-main{height:12px;width:80%;}
+.skeleton-line.h-sub{height:10px;width:55%;margin-top:4px;}
+
+/* Empty state */
+.recs-empty{
+  text-align:center;padding:32px 16px;color:var(--muted);font-size:13px;
+}
+.recs-empty svg{fill:var(--muted2);width:40px;height:40px;margin-bottom:10px;}
+
+/* TOAST */
 #toast{
   position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(20px);
   background:var(--surface3);border:1px solid var(--border);
@@ -290,23 +303,42 @@ main{max-width:820px;margin:0 auto;padding:0 0 56px;}
 }
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-/* ── Hidden util ── */
-.hidden{display:none!important;}
-
-@media(min-width:600px){
-  .video-wrap{border-radius:0 0 var(--radius) var(--radius);}
-  .vid-title{font-size:19px;}
+/* BOTTOM NAV */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(13,13,18,0.96);
+  backdrop-filter:blur(12px);
+  border-top:1px solid var(--border);
+  display:flex;justify-content:space-around;align-items:center;
+  padding:6px 0 calc(6px + env(safe-area-inset-bottom));z-index:100;
 }
+.nav-item{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  color:var(--muted2);font-size:10px;font-weight:600;
+  text-decoration:none;letter-spacing:.3px;
+  padding:4px 12px;cursor:pointer;transition:color .15s;
+}
+.nav-item svg{fill:var(--muted2);width:20px;height:20px;transition:fill .15s;}
+.nav-item.active{color:var(--accent);}
+.nav-item.active svg{fill:var(--accent);}
+
+/* RESPONSIVE */
+@media(max-width:860px){
+  .sidebar-col{display:none;}
+  .recs-section{display:block;}
+}
+@media(min-width:861px){
+  .recs-section{display:none;}
+  .sidebar-col{display:block;}
+}
+.hidden{display:none!important;}
 </style>
 </head>
 <body>
 
-<!-- Header -->
 <header>
   <a class="logo" href="#">
-    <div class="logo-mark">
-      <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-    </div>
+    <div class="logo-mark"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
     <div>
       <div class="logo-text">ALYA Tube</div>
       <div class="logo-sub">18+ Content</div>
@@ -319,149 +351,145 @@ main{max-width:820px;margin:0 auto;padding:0 0 56px;}
   </div>
 </header>
 
-<!-- Loading -->
 <div id="loading-screen">
   <div class="spinner"></div>
   <p class="loading-label">Loading from ALYA Tube…</p>
 </div>
 
-<!-- Error -->
 <div id="error-screen" class="hidden">
   <div class="error-emoji">🌸</div>
   <p class="error-title">Couldn't load</p>
   <p class="error-body" id="error-msg">Something went wrong fetching this file.</p>
 </div>
 
-<!-- ── PLAYER UI ── -->
 <div id="player-ui" class="hidden">
+  <div class="page-layout">
 
-  <main>
+    <!-- MAIN COLUMN -->
+    <div class="main-col">
 
-    <!-- Video wrap -->
-    <div class="video-wrap" id="video-wrap">
-      <div id="thumb-overlay">
-        <img id="thumb-img" src="" alt=""/>
-        <div class="thumb-gradient"></div>
-        <div class="play-ring" id="play-ring">
-          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      <!-- Video area -->
+      <div class="video-wrap" id="video-wrap">
+        <div id="thumb-overlay">
+          <img id="thumb-img" src="" alt=""/>
+          <div class="thumb-gradient"></div>
+          <div class="play-ring" id="play-ring">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+        </div>
+        <video id="video-player" controls preload="metadata" playsinline style="display:none;width:100%;height:100%;"></video>
+      </div>
+
+      <div class="audio-card hidden" id="audio-card">
+        <div class="audio-icon">🎵</div>
+        <audio id="audio-player" controls style="flex:1;min-width:0;"></audio>
+      </div>
+
+      <div class="file-card hidden" id="file-card">
+        <div class="file-icon-big" id="file-icon-big">📄</div>
+        <div class="file-name-big" id="file-name-big">—</div>
+        <div class="file-type-tag" id="file-type-tag">FILE</div>
+      </div>
+
+      <!-- Info below video -->
+      <div class="below">
+        <h1 class="vid-title" id="vid-title">—</h1>
+
+        <div class="meta-row" id="meta-row">
+          <div class="meta-pill" id="pill-type">
+            <svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+            <b>Video</b>
+          </div>
+          <div class="meta-pill">
+            <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+            <b id="meta-date-val">—</b>
+          </div>
+          <div class="meta-pill">
+            <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+            <b id="meta-time-val">—</b>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="channel-card">
+          <div class="ch-avatar" id="ch-avatar">
+            <img src="https://rishavhu6976.github.io/sammtube/alya-avatar.jpg"
+                 onerror="this.style.display='none';this.parentElement.textContent='A';" alt="ALYA"/>
+          </div>
+          <div class="ch-info">
+            <div class="ch-name">ALYA 18+</div>
+            <div class="ch-sub">Official Channel · 80 monthly users</div>
+          </div>
+          <a class="subscribe-btn" href="https://t.me/s4mmhu" target="_blank">
+            <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 6.63 5.37 12 12 12s12-5.37 12-12C24 5.37 18.63 0 12 0zm5.89 8.22l-1.97 9.29c-.14.64-.52.8-.99.5l-2.75-2.03-1.33 1.28c-.15.15-.27.27-.55.27l.2-2.8 5.06-4.57c.22-.2-.05-.31-.34-.11L7.1 14.9 4.38 14c-.63-.2-.64-.63.13-.93l11.5-4.43c.52-.19.98.13.88.58z"/></svg>
+            Join
+          </a>
+        </div>
+
+        <div class="action-bar">
+          <a class="act-btn primary" id="download-btn" href="#" download>
+            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            Download
+          </a>
+          <button class="act-btn" id="share-btn">
+            <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
+            Share
+          </button>
+          <button class="act-btn" id="copy-btn">
+            <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+            Copy Link
+          </button>
+        </div>
+
+        <div class="desc-card hidden" id="desc-card">
+          <div class="desc-label">Caption</div>
+          <div class="desc-text" id="desc-text"></div>
         </div>
       </div>
-      <video id="video-player" controls preload="metadata" playsinline style="display:none;width:100%;height:100%;"></video>
+
+      <!-- MORE VIDEOS (shown below video on mobile) -->
+      <div class="recs-section" id="recs-below">
+        <div class="recs-heading">More Videos</div>
+        <div class="recs-grid-below" id="recs-grid-below"></div>
+      </div>
+
+    </div><!-- /main-col -->
+
+    <!-- SIDEBAR COLUMN (desktop only) -->
+    <div class="sidebar-col" id="sidebar-col">
+      <div class="recs-heading">More Videos</div>
+      <div class="recs-grid-sidebar" id="recs-grid-sidebar"></div>
     </div>
 
-    <!-- Audio card (hidden by default) -->
-    <div class="audio-card hidden" id="audio-card">
-      <div class="audio-icon">🎵</div>
-      <audio id="audio-player" controls style="flex:1;min-width:0;"></audio>
-    </div>
+  </div><!-- /page-layout -->
+</div>
 
-    <!-- File card (hidden by default) -->
-    <div class="file-card hidden" id="file-card">
-      <div class="file-icon-big" id="file-icon-big">📄</div>
-      <div class="file-name-big" id="file-name-big">—</div>
-      <div class="file-type-tag" id="file-type-tag">FILE</div>
-    </div>
-
-    <div class="below">
-
-      <!-- Title -->
-      <h1 class="vid-title" id="vid-title">—</h1>
-
-      <!-- Meta pills -->
-      <div class="meta-row" id="meta-row">
-        <div class="meta-pill" id="pill-type">
-          <svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
-          <b>Video</b>
-        </div>
-        <div class="meta-pill" id="pill-date">
-          <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
-          <b id="meta-date-val">—</b>
-        </div>
-        <div class="meta-pill" id="pill-time">
-          <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
-          <b id="meta-time-val">—</b>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <!-- Channel card -->
-      <div class="channel-card">
-        <div class="ch-avatar" id="ch-avatar">
-          <img src="https://rishavhu6976.github.io/sammtube/alya-avatar.jpg"
-               onerror="this.style.display='none';this.parentElement.textContent='A';"
-               alt="ALYA"/>
-        </div>
-        <div class="ch-info">
-          <div class="ch-name">ALYA 18+</div>
-          <div class="ch-sub">Official Channel · 80 monthly users</div>
-        </div>
-        <a class="subscribe-btn" id="join-btn" href="https://t.me/s4mmhu" target="_blank">
-          <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 6.63 5.37 12 12 12s12-5.37 12-12C24 5.37 18.63 0 12 0zm5.89 8.22l-1.97 9.29c-.14.64-.52.8-.99.5l-2.75-2.03-1.33 1.28c-.15.15-.27.27-.55.27l.2-2.8 5.06-4.57c.22-.2-.05-.31-.34-.11L7.1 14.9 4.38 14c-.63-.2-.64-.63.13-.93l11.5-4.43c.52-.19.98.13.88.58z"/></svg>
-          Join
-        </a>
-      </div>
-
-      <!-- Action bar -->
-      <div class="action-bar">
-        <a class="act-btn primary" id="download-btn" href="#" download>
-          <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-          Download
-        </a>
-        <button class="act-btn" id="share-btn">
-          <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
-          Share
-        </button>
-        <button class="act-btn" id="copy-btn">
-          <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-          Copy Link
-        </button>
-      </div>
-
-      <!-- Caption -->
-      <div class="desc-card hidden" id="desc-card">
-        <div class="desc-label">Caption</div>
-        <div class="desc-text" id="desc-text"></div>
-      </div>
-
-    </div>
-  </main>
-
-</div><!-- /player-ui -->
-
-<!-- Toast -->
 <div id="toast"></div>
 
-<!-- Bottom Nav -->
-<nav class="bottom-nav" id="bottom-nav">
+<nav class="bottom-nav">
   <a class="nav-item active" href="#">
     <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
     Home
   </a>
-  <a class="nav-item" id="nav-files" href="#" onclick="showToast('More content coming soon!')">
+  <a class="nav-item" href="#" onclick="showToast('More content coming soon!')">
     <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9h-4v4h-2v-4H9V9h4V5h2v4h4v2z"/></svg>
-    More
+    Browse
   </a>
-  <a class="nav-item" id="nav-tg" href="https://t.me/s4mmhu" target="_blank">
+  <a class="nav-item" href="https://t.me/s4mmhu" target="_blank">
     <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 6.63 5.37 12 12 12s12-5.37 12-12C24 5.37 18.63 0 12 0zm5.89 8.22l-1.97 9.29c-.14.64-.52.8-.99.5l-2.75-2.03-1.33 1.28c-.15.15-.27.27-.55.27l.2-2.8 5.06-4.57c.22-.2-.05-.31-.34-.11L7.1 14.9 4.38 14c-.63-.2-.64-.63.13-.93l11.5-4.43c.52-.19.98.13.88.58z"/></svg>
     Telegram
   </a>
 </nav>
 
 <script>
-// ── Telegram Mini App init ────────────────────────────────────────────────────
 const tg = window.Telegram?.WebApp;
-if (tg) {
-  tg.ready();
-  tg.expand();
-  tg.setHeaderColor('#0d0d12');
-  tg.setBackgroundColor('#0d0d12');
-}
+if (tg) { tg.ready(); tg.expand(); tg.setHeaderColor('#0d0d12'); tg.setBackgroundColor('#0d0d12'); }
 
-// ── Params ────────────────────────────────────────────────────────────────────
 const P       = new URLSearchParams(location.search);
 const FILE_ID = P.get('fid')     || '';
 const BOT_TK  = P.get('bot')     || '';
+const TOKEN   = P.get('token')   || '';
 const TITLE   = P.get('title')   || 'Untitled';
 const DATE_R  = P.get('date')    || '';
 const FTYPE   = P.get('type')    || 'video';
@@ -470,15 +498,12 @@ const THUMB   = P.get('thumb')   || '';
 
 const $id = id => document.getElementById(id);
 
-// ── Toast ─────────────────────────────────────────────────────────────────────
 function showToast(msg, ms=2200) {
   const t = $id('toast');
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), ms);
 }
-
-// ── Error / Show ──────────────────────────────────────────────────────────────
 function showError(msg) {
   $id('loading-screen').classList.add('hidden');
   $id('error-screen').classList.remove('hidden');
@@ -488,20 +513,16 @@ function showPlayer() {
   $id('loading-screen').classList.add('hidden');
   $id('player-ui').classList.remove('hidden');
 }
-
-// ── Format datetime ───────────────────────────────────────────────────────────
 function fmtDT(iso) {
   if (!iso) return ['—', '—'];
   try {
     const d = new Date(iso);
     return [
-      d.toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'}),
-      d.toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit',hour12:true})
+      d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}),
+      d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true})
     ];
-  } catch { return [iso, '']; }
+  } catch { return [iso,'']; }
 }
-
-// ── Telegram getFile ──────────────────────────────────────────────────────────
 async function tgFileUrl(fileId) {
   const r = await fetch(`https://api.telegram.org/bot${BOT_TK}/getFile?file_id=${encodeURIComponent(fileId)}`);
   const j = await r.json();
@@ -509,94 +530,208 @@ async function tgFileUrl(fileId) {
   return `https://api.telegram.org/file/bot${BOT_TK}/${j.result.file_path}`;
 }
 
-// ── File type icons ───────────────────────────────────────────────────────────
 const ICONS = {video:'🎬',audio:'🎵',document:'📄',photo:'🖼️',voice:'🎙️',video_note:'📹',sticker:'🌀'};
 
-// ── Main ──────────────────────────────────────────────────────────────────────
+/* ── RECOMMENDATIONS ──────────────────────────────────────────────────────── */
+
+function skeletonCards(n, grid) {
+  grid.innerHTML = '';
+  for (let i = 0; i < n; i++) {
+    grid.insertAdjacentHTML('beforeend',
+      `<div class="rec-skeleton"><div class="skeleton-thumb"></div>
+       <div class="skeleton-line h-main"></div><div class="skeleton-line h-sub"></div></div>`
+    );
+  }
+}
+
+async function buildRecCards(allFiles, currentToken, botUsername) {
+  const others = Object.entries(allFiles).filter(([t]) => t !== currentToken);
+  if (others.length === 0) return null;
+
+  // Resolve thumbnails for up to 8 items in parallel (best-effort)
+  const items = others.slice(0, 20);
+  const resolved = await Promise.all(items.map(async ([token, f]) => {
+    let thumbUrl = '';
+    if (f.thumb_file_id && BOT_TK) {
+      try { thumbUrl = await tgFileUrl(f.thumb_file_id); } catch {}
+    }
+    return { token, f, thumbUrl };
+  }));
+
+  return resolved;
+}
+
+function recCardHTML(item, layout) {
+  const { token, f, thumbUrl } = item;
+  const name = decodeURIComponent(f.name || 'File');
+  const ftype = f.file_type || 'document';
+  const icon = ICONS[ftype] || '📄';
+  const deliveries = f.stats?.deliveries || 0;
+  const dateStr = f.uploaded_at ? new Date(f.uploaded_at).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) : '';
+
+  const thumbHtml = thumbUrl
+    ? `<img class="rec-thumb-img" src="${thumbUrl}" loading="lazy" alt="${name}" onerror="this.parentElement.innerHTML='<div class=rec-thumb-placeholder><svg viewBox=\\'0 0 24 24\\'><path d=\\'M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z\\'/></svg></div>'"/>`
+    : `<div class="rec-thumb-placeholder"><svg viewBox="0 0 24 24"><path d="${ftype==='audio'||ftype==='voice'?'M12 3v10.55A4 4 0 1014 17V7h4V3h-6z':'M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z'}"/></svg></div>`;
+
+  const botLink = `https://t.me/${botUsername}?start=file_${token}`;
+
+  return `
+  <a class="rec-card" href="${botLink}" target="_blank" onclick="recClick(event,'${botLink}','${token}')">
+    <div class="rec-thumb">
+      ${thumbHtml}
+      <span class="rec-type-badge">${ftype.replace('_',' ')}</span>
+      ${deliveries > 0 ? `<span class="rec-play-badge">▶ ${deliveries}</span>` : ''}
+    </div>
+    <div class="rec-info">
+      <div class="rec-title">${name}</div>
+      <div class="rec-meta">
+        <span>ALYA Tube</span>
+        ${dateStr ? `<span class="rec-meta-dot"></span><span>${dateStr}</span>` : ''}
+        ${deliveries > 0 ? `<span class="rec-meta-dot"></span><span>${deliveries} views</span>` : ''}
+      </div>
+    </div>
+  </a>`;
+}
+
+function recClick(e, botLink, token) {
+  e.preventDefault();
+  if (tg && tg.openTelegramLink) {
+    tg.openTelegramLink(botLink);
+  } else {
+    window.open(botLink, '_blank');
+  }
+}
+
+async function loadRecommendations(currentToken) {
+  const gridBelow   = $id('recs-grid-below');
+  const gridSidebar = $id('recs-grid-sidebar');
+
+  skeletonCards(4, gridBelow);
+  skeletonCards(6, gridSidebar);
+
+  try {
+    if (!BOT_TK) throw new Error('no bot token');
+
+    // Fetch all files from bot via a custom endpoint won't work from client-side
+    // Instead, we read from URL params — the bot passes all files in ?files= param
+    // OR fall back to data.json if hosted alongside player.html
+    let allFiles = {};
+
+    // Check if files were passed as a URL param (JSON encoded)
+    const filesParam = P.get('files');
+    if (filesParam) {
+      try { allFiles = JSON.parse(decodeURIComponent(filesParam)); } catch {}
+    }
+
+    // Fallback: try loading data.json from same origin (works when bot and player are co-hosted)
+    if (Object.keys(allFiles).length === 0) {
+      try {
+        const r = await fetch('./data.json');
+        if (r.ok) {
+          const d = await r.json();
+          allFiles = d.files || {};
+        }
+      } catch {}
+    }
+
+    if (Object.keys(allFiles).length === 0) {
+      gridBelow.innerHTML   = emptyRecsHTML();
+      gridSidebar.innerHTML = emptyRecsHTML();
+      return;
+    }
+
+    // Get bot username for links
+    let botUsername = 'alyabot';
+    try {
+      const meRes = await fetch(`https://api.telegram.org/bot${BOT_TK}/getMe`);
+      const meJ   = await meRes.json();
+      if (meJ.ok) botUsername = meJ.result.username;
+    } catch {}
+
+    const items = await buildRecCards(allFiles, currentToken, botUsername);
+
+    if (!items || items.length === 0) {
+      gridBelow.innerHTML   = emptyRecsHTML();
+      gridSidebar.innerHTML = emptyRecsHTML();
+      return;
+    }
+
+    gridBelow.innerHTML   = items.map(i => recCardHTML(i, 'below')).join('');
+    gridSidebar.innerHTML = items.map(i => recCardHTML(i, 'sidebar')).join('');
+
+  } catch (err) {
+    gridBelow.innerHTML   = emptyRecsHTML();
+    gridSidebar.innerHTML = emptyRecsHTML();
+  }
+}
+
+function emptyRecsHTML() {
+  return `<div class="recs-empty" style="grid-column:1/-1">
+    <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9h-4v4h-2v-4H9V9h4V5h2v4h4v2z"/></svg>
+    <p>No other videos yet</p>
+  </div>`;
+}
+
+/* ── MAIN ─────────────────────────────────────────────────────────────────── */
 async function init() {
   if (!FILE_ID || !BOT_TK) {
     showError('Missing file info. Please open this via the ALYA bot link.');
     return;
   }
-
   try {
-    // Resolve URLs in parallel
     const [fileUrl, thumbUrl] = await Promise.all([
       tgFileUrl(FILE_ID),
       THUMB ? tgFileUrl(THUMB).catch(() => '') : Promise.resolve('')
     ]);
 
-    // ── Meta ──
     const decodedTitle = decodeURIComponent(TITLE);
     const [dateStr, timeStr] = fmtDT(DATE_R);
     const decodedCap = decodeURIComponent(CAP || '');
 
-    $id('vid-title').textContent    = decodedTitle;
+    $id('vid-title').textContent     = decodedTitle;
     $id('meta-date-val').textContent = dateStr;
     $id('meta-time-val').textContent = timeStr;
     $id('pill-type').querySelector('b').textContent =
       FTYPE.charAt(0).toUpperCase() + FTYPE.slice(1).replace('_',' ');
 
-    // ── Download btn ──
     const dlBtn = $id('download-btn');
     dlBtn.href = fileUrl;
     dlBtn.setAttribute('download', decodedTitle);
 
-    // ── Share ──
     $id('share-btn').addEventListener('click', () => {
-      if (tg && tg.switchInlineQuery) {
-        tg.switchInlineQuery(location.href);
-      } else if (navigator.share) {
-        navigator.share({ title: decodedTitle, url: location.href }).catch(()=>{});
-      } else {
-        navigator.clipboard?.writeText(location.href);
-        showToast('🔗 Link copied!');
-      }
+      if (tg && tg.switchInlineQuery) { tg.switchInlineQuery(location.href); }
+      else if (navigator.share) { navigator.share({title:decodedTitle,url:location.href}).catch(()=>{}); }
+      else { navigator.clipboard?.writeText(location.href); showToast('🔗 Link copied!'); }
     });
-
-    // ── Copy link ──
     $id('copy-btn').addEventListener('click', () => {
       navigator.clipboard?.writeText(location.href)
-        .then(() => showToast('✅ Link copied!'))
-        .catch(() => showToast('Could not copy'));
+        .then(() => showToast('✅ Link copied!')).catch(() => showToast('Could not copy'));
     });
 
-    // ── Caption ──
     if (decodedCap) {
       $id('desc-card').classList.remove('hidden');
       $id('desc-text').textContent = decodedCap;
     }
 
-    // ── Render by type ──
     const isVideo = FTYPE === 'video' || FTYPE === 'video_note';
     const isAudio = FTYPE === 'audio' || FTYPE === 'voice';
 
     if (isVideo) {
-      // Thumbnail
-      if (thumbUrl) {
-        $id('thumb-img').src = thumbUrl;
-      } else {
-        $id('thumb-img').style.display = 'none';
-      }
-
+      if (thumbUrl) { $id('thumb-img').src = thumbUrl; }
+      else { $id('thumb-img').style.display = 'none'; }
       const vid = $id('video-player');
       vid.src = fileUrl;
-
       $id('play-ring').addEventListener('click', () => {
         $id('thumb-overlay').classList.add('gone');
-        vid.style.display = 'block';
-        vid.play();
+        vid.style.display = 'block'; vid.play();
       });
       vid.addEventListener('play', () => {
-        $id('thumb-overlay').classList.add('gone');
-        vid.style.display = 'block';
+        $id('thumb-overlay').classList.add('gone'); vid.style.display = 'block';
       });
-
     } else if (isAudio) {
       $id('video-wrap').classList.add('hidden');
       $id('audio-card').classList.remove('hidden');
       $id('audio-player').src = fileUrl;
-
     } else {
       $id('video-wrap').classList.add('hidden');
       $id('file-card').classList.remove('hidden');
@@ -606,6 +741,9 @@ async function init() {
     }
 
     showPlayer();
+
+    // Load recommendations after showing player (non-blocking)
+    loadRecommendations(TOKEN);
 
   } catch(e) {
     showError(`Failed to load: ${e.message}`);
