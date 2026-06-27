@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>ALYA Tube</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+:root{
+  --bg:#0a0a0f;--s1:#111118;--s2:#18181f;--s3:#1e1e28;--s4:#252530;
+  --border:#2c2c3a;--border2:#3a3a4a;
+  --p:#a855f7;--p2:#c084fc;--p3:#7c3aed;--pg:rgba(168,85,247,0.18);
+  --red:#ef4444;--text:#f1f1f8;--t2:#a0a0c0;--t3:#606080;
+  --r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* BOOT */
+#boot{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;z-index:9999;transition:opacity .4s;}
+#boot.fade{opacity:0;pointer-events:none;}
+.boot-mark{width:72px;height:50px;border-radius:14px;background:linear-gradient(135deg,var(--p3),var(--p));display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(168,85,247,.5);}
+.boot-mark svg{fill:#fff;width:30px;height:30px;}
+.boot-name{font-size:28px;font-weight:900;letter-spacing:-.5px;background:linear-gradient(90deg,var(--p2),#e879f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.boot-bar{width:160px;height:3px;background:var(--s3);border-radius:2px;overflow:hidden;}
+.boot-fill{height:100%;background:linear-gradient(90deg,var(--p3),var(--p2));border-radius:2px;width:0;transition:width 1.4s ease-out;}
+.boot-sub{font-size:11px;color:var(--t3);letter-spacing:.5px;}
+
+/* APP */
+#app{display:none;padding-bottom:64px;}
+
+/* HEADER */
+header{height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;position:sticky;top:0;z-index:100;background:rgba(10,10,15,.97);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);}
+.hlogo{display:flex;align-items:center;gap:8px;text-decoration:none;}
+.hmark{width:28px;height:20px;border-radius:6px;background:linear-gradient(135deg,var(--p3),var(--p));display:flex;align-items:center;justify-content:center;}
+.hmark svg{fill:#fff;width:12px;height:12px;}
+.hword{font-size:15px;font-weight:900;background:linear-gradient(90deg,var(--p2),#e879f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hbadge{background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);color:var(--p2);font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;letter-spacing:.5px;}
+.hsearch{flex:1;max-width:210px;background:var(--s2);border:1px solid var(--border);border-radius:20px;display:flex;align-items:center;gap:6px;padding:0 11px;height:32px;transition:border-color .15s;}
+.hsearch:focus-within{border-color:var(--p);}
+.hsearch svg{fill:var(--t3);width:13px;height:13px;flex-shrink:0;}
+.hsearch input{background:none;border:none;outline:none;font-size:12px;color:var(--text);width:100%;}
+.hsearch input::placeholder{color:var(--t3);}
+.hbtn{width:34px;height:34px;border-radius:50%;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;}
+.hbtn svg{fill:var(--t2);width:15px;height:15px;}
+
+/* HERO */
+.hero{padding:18px 14px 16px;background:linear-gradient(180deg,rgba(124,58,237,.1) 0%,transparent 100%);border-bottom:1px solid var(--border);}
+.hero-row{display:flex;align-items:center;gap:12px;margin-bottom:13px;}
+.hero-av{width:50px;height:50px;border-radius:50%;flex-shrink:0;overflow:hidden;border:2px solid var(--p);box-shadow:0 0 18px var(--pg);background:linear-gradient(135deg,var(--p3),var(--p),#db2777);display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:900;color:#fff;}
+.hero-av img{width:100%;height:100%;object-fit:cover;}
+.hero-inf{flex:1;min-width:0;}
+.hero-name{font-size:16px;font-weight:800;}
+.hero-sub{font-size:11px;color:var(--t2);margin-top:2px;}
+.hero-join{display:inline-flex;align-items:center;gap:5px;background:var(--p);color:#fff;border:none;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap;flex-shrink:0;}
+.hero-join svg{fill:#fff;width:12px;height:12px;}
+.stats-row{display:flex;gap:6px;flex-wrap:wrap;}
+.stat{background:var(--s2);border:1px solid var(--border);border-radius:20px;padding:5px 11px;font-size:11px;color:var(--t2);}
+.stat b{color:var(--text);font-weight:700;}
+
+/* FILTERS */
+.filters{display:flex;gap:6px;padding:10px 12px;overflow-x:auto;border-bottom:1px solid var(--border);background:var(--s1);position:sticky;top:52px;z-index:50;}
+.filters::-webkit-scrollbar{display:none;}
+.fbtn{background:var(--s2);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:11px;font-weight:600;color:var(--t2);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s;}
+.fbtn.on{background:var(--pg);border-color:var(--p);color:var(--p2);}
+
+/* GRID */
+.grid-section{padding:12px 12px 0;}
+.grid-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.grid-title{font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;}
+.grid-count{font-size:11px;color:var(--t3);}
+.vgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+@media(min-width:420px){.vgrid{grid-template-columns:repeat(3,1fr);}}
+@media(min-width:650px){.vgrid{grid-template-columns:repeat(4,1fr);}}
+
+.vcard{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;text-decoration:none;display:flex;flex-direction:column;transition:border-color .2s,transform .15s;cursor:pointer;}
+.vcard:hover{border-color:var(--p);transform:translateY(-2px);}
+.vthumb{aspect-ratio:16/9;background:var(--s3);position:relative;overflow:hidden;}
+.vthumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.vph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
+.vph svg{fill:var(--t3);width:24px;height:24px;}
+.vbadge{position:absolute;top:4px;left:4px;background:rgba(124,58,237,.88);border-radius:4px;padding:2px 5px;font-size:9px;color:#fff;font-weight:700;text-transform:uppercase;letter-spacing:.3px;}
+.vnew{position:absolute;top:4px;right:4px;background:rgba(239,68,68,.88);border-radius:4px;padding:2px 5px;font-size:9px;color:#fff;font-weight:700;}
+.voverlay{position:absolute;inset:0;background:rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .18s;}
+.vcard:hover .voverlay{opacity:1;}
+.voverlay svg{fill:#fff;width:28px;height:28px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5));}
+.vinf{padding:7px 8px 9px;flex:1;display:flex;flex-direction:column;gap:2px;}
+.vtitle{font-size:11.5px;font-weight:600;line-height:1.4;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.vmeta{font-size:10px;color:var(--t3);margin-top:2px;display:flex;align-items:center;gap:3px;}
+.vmeta svg{fill:var(--t3);width:9px;height:9px;}
+
+/* SKELETON */
+.skel{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.skel-img{aspect-ratio:16/9;background:var(--s2);position:relative;overflow:hidden;}
+.skel-img::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent);animation:shim 1.3s infinite;}
+@keyframes shim{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.skel-body{padding:8px;display:flex;flex-direction:column;gap:5px;}
+.skel-line{background:var(--s3);border-radius:3px;height:9px;}
+.w80{width:80%;}.w50{width:50%;}
+
+/* EMPTY / ERROR */
+.empty{padding:52px 24px;text-align:center;grid-column:1/-1;}
+.empty-ico{font-size:44px;margin-bottom:10px;}
+.empty-ttl{font-size:15px;font-weight:700;margin-bottom:6px;}
+.empty-sub{font-size:12px;color:var(--t2);line-height:1.7;max-width:280px;margin:0 auto;}
+.empty-sub code{background:var(--s3);border-radius:4px;padding:1px 5px;font-size:11px;color:var(--p2);}
+
+/* TOAST */
+#toast{position:fixed;bottom:68px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--s4);border:1px solid var(--border2);color:var(--text);font-size:12px;font-weight:600;padding:9px 18px;border-radius:22px;opacity:0;transition:opacity .22s,transform .22s;pointer-events:none;white-space:nowrap;z-index:900;box-shadow:0 4px 20px rgba(0,0,0,.4);}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;height:56px;background:rgba(10,10,15,.97);backdrop-filter:blur(14px);border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:center;z-index:200;padding-bottom:env(safe-area-inset-bottom);}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--t3);font-size:9.5px;font-weight:700;text-decoration:none;cursor:pointer;padding:5px 10px;transition:color .15s;}
+.bn svg{fill:var(--t3);width:19px;height:19px;transition:fill .15s;}
+.bn.on,.bn:hover{color:var(--p2);}
+.bn.on svg,.bn:hover svg{fill:var(--p2);}
+</style>
+</head>
+<body>
+
+<div id="boot">
+  <div class="boot-mark"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+  <div class="boot-name">ALYA Tube</div>
+  <div class="boot-bar"><div class="boot-fill" id="bfill"></div></div>
+  <div class="boot-sub">18+ Content Platform</div>
+</div>
+
+<div id="app">
+  <header>
+    <a class="hlogo" href="#">
+      <div class="hmark"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      <div class="hword">ALYA Tube</div>
+      <span class="hbadge">18+</span>
+    </a>
+    <div class="hsearch">
+      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input id="search-inp" placeholder="Search…" autocomplete="off"/>
+    </div>
+    <a class="hbtn" href="https://t.me/s4mmhu" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 6.63 5.37 12 12 12s12-5.37 12-12C24 5.37 18.63 0 12 0zm5.89 8.22l-1.97 9.29c-.14.64-.52.8-.99.5l-2.75-2.03-1.33 1.28c-.15.15-.27.27-.55.27l.2-2.8 5.06-4.57c.22-.2-.05-.31-.34-.11L7.1 14.9 4.38 14c-.63-.2-.64-.63.13-.93l11.5-4.43c.52-.19.98.13.88.58z"/></svg>
+    </a>
+  </header>
+
+  <div class="hero">
+    <div class="hero-row">
+      <div class="hero-av">
+        <img src="https://rishavhu6976.github.io/sammtube/alya-avatar.jpg"
+             onerror="this.style.display='none'" alt=""/>A
+      </div>
+      <div class="hero-inf">
+        <div class="hero-name">ALYA 18+ 🔥</div>
+        <div class="hero-sub">Exclusive content · Updated daily</div>
+      </div>
+      <a class="hero-join" href="https://t.me/s4mmhu" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 6.63 5.37 12 12 12s12-5.37 12-12C24 5.37 18.63 0 12 0zm5.89 8.22l-1.97 9.29c-.14.64-.52.8-.99.5l-2.75-2.03-1.33 1.28c-.15.15-.27.27-.55.27l.2-2.8 5.06-4.57c.22-.2-.05-.31-.34-.11L7.1 14.9 4.38 14c-.63-.2-.64-.63.13-.93l11.5-4.43c.52-.19.98.13.88.58z"/></svg>
+        Join
+      </a>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><b id="stat-files">—</b> Videos</div>
+      <div class="stat"><b id="stat-views">—</b> Views</div>
+      <div class="stat" id="stat-new-wrap" style="display:none"><b id="stat-new">0</b> New Today</div>
+    </div>
+  </div>
+
+  <div class="filters">
+    <button class="fbtn on" onclick="setFilter('all',this)">🎞 All</button>
+    <button class="fbtn" onclick="setFilter('video',this)">🎬 Video</button>
+    <button class="fbtn" onclick="setFilter('audio',this)">🎵 Audio</button>
+    <button class="fbtn" onclick="setFilter('document',this)">📄 Docs</button>
+    <button class="fbtn" onclick="setFilter('photo',this)">🖼 Photos</button>
+  </div>
+
+  <div class="grid-section">
+    <div class="grid-header">
+      <span class="grid-title" id="grid-label">All Content</span>
+      <span class="grid-count" id="grid-count">Loading…</span>
+    </div>
+    <div class="vgrid" id="vgrid"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<nav class="bnav">
+  <div class="bn on">
+    <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    Home
+  </div>
+  <a class="bn" href="https://t.me/+XkjWawY00Lo1MDk1" target="_blank">
+    <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 6.63 5.37 12 12 12s12-5.37 12-12C24 5.37 18.63 0 12 0zm5.89 8.22l-1.97 9.29c-.14.64-.52.8-.99.5l-2.75-2.03-1.33 1.28c-.15.15-.27.27-.55.27l.2-2.8 5.06-4.57c.22-.2-.05-.31-.34-.11L7.1 14.9 4.38 14c-.63-.2-.64-.63.13-.93l11.5-4.43c.52-.19.98.13.88.58z"/></svg>
+    Channel
+  </a>
+  <a class="bn" href="https://t.me/sammchats" target="_blank">
+    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+    Chat
+  </a>
+</nav>
+
+<script>
+const tg = window.Telegram?.WebApp;
+if (tg) { tg.ready(); tg.expand(); tg.setHeaderColor('#0a0a0f'); tg.setBackgroundColor('#0a0a0f'); }
+
+const P       = new URLSearchParams(location.search);
+const BOT_TK  = P.get('bot')    || '';
+const OWNER   = P.get('owner')  || '';
+const CATMSG  = P.get('catmsg') || '';
+const CATALOG_URL = 'https://rishavhu6976.github.io/alyatube/catalog.json';
+
+let BOT_USER = 'alyabot';
+let allItems = [], currentFilter = 'all';
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// ── toast ──────────────────────────────────────────────────────
+let _tt;
+function toast(msg, ms=2200) {
+  const el = $('toast'); el.textContent = msg; el.classList.add('on');
+  clearTimeout(_tt); _tt = setTimeout(()=>el.classList.remove('on'), ms);
+}
+
+// ── boot ───────────────────────────────────────────────────────
+function hideBoot() {
+  setTimeout(()=>{ $('boot').classList.add('fade'); setTimeout(()=>$('boot').style.display='none',400); }, 1000);
+}
+
+// ── skeletons ──────────────────────────────────────────────────
+function showSkels(n) {
+  $('vgrid').innerHTML = Array(n).fill(0).map(()=>`
+    <div class="skel">
+      <div class="skel-img"></div>
+      <div class="skel-body"><div class="skel-line w80"></div><div class="skel-line w50"></div></div>
+    </div>`).join('');
+  $('grid-count').textContent = 'Loading…';
+}
+
+// ── filter ─────────────────────────────────────────────────────
+function setFilter(type, btn) {
+  currentFilter = type;
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  const labels = {all:'All Content',video:'Videos',audio:'Audio',document:'Documents',photo:'Photos'};
+  $('grid-label').textContent = labels[type] || 'Content';
+  renderGrid();
+}
+
+// ── search ─────────────────────────────────────────────────────
+let searchQ = '';
+$('search-inp').addEventListener('input', function() {
+  searchQ = this.value.toLowerCase().trim();
+  renderGrid();
+});
+
+// ── open link ──────────────────────────────────────────────────
+function openLink(e, link) {
+  e.preventDefault();
+  if (tg?.openTelegramLink) tg.openTelegramLink(link);
+  else window.open(link, '_blank');
+}
+
+// ── thumb cache ────────────────────────────────────────────────
+const thumbCache = {};
+async function resolveThumb(fileId) {
+  if (!fileId || !BOT_TK) return '';
+  if (thumbCache[fileId]) return thumbCache[fileId];
+  try {
+    const r = await fetch(`https://api.telegram.org/bot${BOT_TK}/getFile?file_id=${encodeURIComponent(fileId)}`);
+    const j = await r.json();
+    if (j.ok) {
+      const url = `https://api.telegram.org/file/bot${BOT_TK}/${j.result.file_path}`;
+      thumbCache[fileId] = url;
+      return url;
+    }
+  } catch {}
+  return '';
+}
+
+// ── render grid ────────────────────────────────────────────────
+function renderGrid() {
+  let items = allItems;
+  if (currentFilter !== 'all') items = items.filter(i => i.type === currentFilter);
+  if (searchQ) items = items.filter(i => (i.name||'').toLowerCase().includes(searchQ));
+
+  $('grid-count').textContent = items.length + ' item' + (items.length !== 1 ? 's' : '');
+
+  if (!items.length) {
+    $('vgrid').innerHTML = `<div class="empty">
+      <div class="empty-ico">${searchQ ? '🔍' : '📭'}</div>
+      <div class="empty-ttl">${searchQ ? 'No results' : 'No content yet'}</div>
+      <div class="empty-sub">${searchQ ? 'Try a different search term.' : 'Content will appear here once the admin uploads files.'}</div>
+    </div>`;
+    return;
+  }
+
+  const isNew = d => d && (Date.now() - new Date(d).getTime()) < 7 * 86400 * 1000;
+  const ph = `<div class="vph"><svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg></div>`;
+
+  $('vgrid').innerHTML = items.map(item => {
+    const link = `https://t.me/${BOT_USER}?start=file_${item.token}`;
+    const date = item.date ? new Date(item.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) : '';
+    const typeLbl = (item.type||'file').replace('_',' ');
+    return `<a class="vcard" href="${link}" data-thumb="${esc(item.thumb||'')}" data-token="${esc(item.token)}" onclick="openLink(event,'${link}')">
+      <div class="vthumb" id="th-${esc(item.token)}">${ph}
+        <span class="vbadge">${esc(typeLbl)}</span>
+        ${isNew(item.date) ? '<span class="vnew">NEW</span>' : ''}
+        <div class="voverlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="vinf">
+        <div class="vtitle">${esc(item.name||'File')}</div>
+        <div class="vmeta">
+          ${item.views ? `<svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>${item.views} · ` : ''}${date}
+        </div>
+      </div>
+    </a>`;
+  }).join('');
+
+  // Lazy-load thumbnails
+  items.forEach(async item => {
+    if (!item.thumb) return;
+    const url = await resolveThumb(item.thumb);
+    if (!url) return;
+    const el = $('th-' + item.token);
+    if (!el) return;
+    const img = document.createElement('img');
+    img.src = url; img.loading = 'lazy'; img.alt = '';
+    img.onerror = function() { this.remove(); };
+    el.insertBefore(img, el.firstChild);
+  });
+}
+
+// ── stats ──────────────────────────────────────────────────────
+function fillStats(items) {
+  $('stat-files').textContent = items.length;
+  const views = items.reduce((s,i) => s + (i.views||0), 0);
+  $('stat-views').textContent = views > 999 ? (views/1000).toFixed(1)+'k' : views;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const newToday = items.filter(i => i.date && new Date(i.date) >= today).length;
+  if (newToday > 0) { $('stat-new').textContent = newToday; $('stat-new-wrap').style.display = 'flex'; }
+}
+
+// ── load catalog ───────────────────────────────────────────────
+async function loadCatalog() {
+  // Try GitHub Pages catalog.json first (set by bot via /pushcatalog)
+  try {
+    const r = await fetch(CATALOG_URL + '?t=' + Date.now());
+    if (r.ok) {
+      const j = await r.json();
+      return j.files || [];
+    }
+  } catch {}
+
+  // Fallback: if bot token + catmsg available, try to read catalog from owner DM
+  // (won't work for private chats via Bot API, but kept as placeholder)
+  return null;
+}
+
+// ── init ───────────────────────────────────────────────────────
+async function init() {
+  $('bfill').style.width = '100%';
+  showSkels(8);
+
+  try {
+    if (BOT_TK) {
+      try {
+        const r = await fetch(`https://api.telegram.org/bot${BOT_TK}/getMe`);
+        const j = await r.json();
+        if (j.ok) BOT_USER = j.result.username;
+      } catch {}
+    }
+
+    const files = await loadCatalog();
+
+    if (!files || files.length === 0) {
+      hideBoot();
+      $('app').style.display = 'block';
+      allItems = [];
+      $('stat-files').textContent = '0';
+      $('stat-views').textContent = '0';
+      $('grid-count').textContent = '0 items';
+      $('vgrid').innerHTML = `<div class="empty">
+        <div class="empty-ico">⚙️</div>
+        <div class="empty-ttl">Catalog not set up yet</div>
+        <div class="empty-sub">
+          Admin needs to set a GitHub token and run <code>/pushcatalog</code> in the bot.<br><br>
+          Steps:<br>
+          1. Get a GitHub PAT (repo scope)<br>
+          2. Send <code>/setgithub YOUR_TOKEN</code> to the bot<br>
+          3. Send <code>/pushcatalog</code><br>
+          4. Reload this page
+        </div>
+      </div>`;
+      return;
+    }
+
+    allItems = files.map(f => ({
+      token: f.token || '',
+      name:  f.name  || 'File',
+      type:  f.type  || 'document',
+      thumb: f.thumb || '',
+      date:  f.date  || '',
+      views: f.views || 0,
+    })).filter(f => f.token);
+
+    fillStats(allItems);
+    hideBoot();
+    $('app').style.display = 'block';
+    renderGrid();
+
+  } catch (e) {
+    hideBoot();
+    $('app').style.display = 'block';
+    allItems = [];
+    $('stat-files').textContent = '0';
+    $('stat-views').textContent = '0';
+    $('vgrid').innerHTML = `<div class="empty">
+      <div class="empty-ico">😞</div>
+      <div class="empty-ttl">Failed to load</div>
+      <div class="empty-sub">${esc(e.message)}</div>
+    </div>`;
+  }
+}
+
+init();
+</script>
+</body>
+</html>
