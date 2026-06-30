@@ -550,9 +550,9 @@ const P=new URLSearchParams(location.search);
 const TOKEN=P.get('token')||'';
 // Point this at your VPS API (see bot.py WEB_HOST/WEB_PORT). Can be
 // overridden per-link with ?api=https://your.domain — handy for testing.
-const DEFAULT_API_BASE='http://13.53.46.42:8080'; // 👈 EDIT ME
+const DEFAULT_API_BASE='https://api.alyatube.example.com'; // 👈 EDIT ME
 const API_BASE=(P.get('api')||DEFAULT_API_BASE).replace(/\/$/,'');
-const BOT_USERNAME='cornpastebot'; // 👈 EDIT ME (used for bot deep links)
+const BOT_USERNAME='alyabot'; // 👈 EDIT ME (used for bot deep links)
 
 let TITLE='Untitled', DATE_R='', FTYPE='video', CAP='', THUMB_URL='', STREAM_URL='';
 
