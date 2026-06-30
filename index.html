@@ -6,42 +6,54 @@
 <title>ALYA Tube</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;500;600;700;800;900&display=swap');
 
 :root{
-  --bg:#0a0a0f;--s1:#111118;--s2:#18181f;--s3:#1e1e28;--s4:#252530;
-  --border:#2c2c3a;--border2:#3a3a4a;
-  --p:#a855f7;--p2:#c084fc;--p3:#7c3aed;--pg:rgba(168,85,247,0.18);
-  --red:#ef4444;--text:#f1f1f8;--t2:#a0a0c0;--t3:#606080;
-  --r:10px;
+  --bg:#0d0a1a;--s1:#161029;--s2:#1d1735;--s3:#251d42;--s4:#2d2451;
+  --border:#352a59;--border2:#473a72;
+  --p:#ff6ec7;--p2:#ffa3dc;--p3:#9d6dff;--cyan:#5eead4;--pg:rgba(255,110,199,0.16);
+  --red:#ff5d8f;--text:#fdf3ff;--t2:#bfb0e0;--t3:#7c6fa3;
+  --r:16px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+body{background-image:radial-gradient(circle at 15% 0%,rgba(157,109,255,.16),transparent 40%),radial-gradient(circle at 90% 15%,rgba(255,110,199,.13),transparent 45%);}
 ::-webkit-scrollbar{width:3px;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* sakura petals */
+#petals{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden;}
+.petal{position:absolute;top:-5%;font-size:14px;opacity:.55;animation:fall linear infinite;filter:drop-shadow(0 0 4px rgba(255,110,199,.4));}
+@keyframes fall{
+  0%{transform:translateY(0) translateX(0) rotate(0deg);opacity:0;}
+  10%{opacity:.6;}
+  90%{opacity:.5;}
+  100%{transform:translateY(110vh) translateX(var(--drift,30px)) rotate(360deg);opacity:0;}
+}
 
 /* BOOT */
 #boot{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;z-index:9999;transition:opacity .4s;}
 #boot.fade{opacity:0;pointer-events:none;}
-.boot-mark{width:72px;height:50px;border-radius:14px;background:linear-gradient(135deg,var(--p3),var(--p));display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(168,85,247,.5);}
+.boot-mark{width:76px;height:54px;border-radius:20px;background:linear-gradient(135deg,var(--p3),var(--p));display:flex;align-items:center;justify-content:center;box-shadow:0 0 44px rgba(255,110,199,.5);animation:pulse 1.8s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
 .boot-mark svg{fill:#fff;width:30px;height:30px;}
-.boot-name{font-size:28px;font-weight:900;letter-spacing:-.5px;background:linear-gradient(90deg,var(--p2),#e879f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.boot-name{font-family:'Baloo 2',sans-serif;font-size:30px;font-weight:800;letter-spacing:-.3px;background:linear-gradient(90deg,var(--p2),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .boot-bar{width:160px;height:3px;background:var(--s3);border-radius:2px;overflow:hidden;}
-.boot-fill{height:100%;background:linear-gradient(90deg,var(--p3),var(--p2));border-radius:2px;width:0;transition:width 1.4s ease-out;}
+.boot-fill{height:100%;background:linear-gradient(90deg,var(--p3),var(--p2),var(--cyan));border-radius:2px;width:0;transition:width 1.4s ease-out;}
 .boot-sub{font-size:11px;color:var(--t3);letter-spacing:.5px;}
 
 /* APP */
-#app{display:none;padding-bottom:64px;}
+#app{display:none;padding-bottom:64px;position:relative;z-index:2;}
 
 /* HEADER */
-header{height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;position:sticky;top:0;z-index:100;background:rgba(10,10,15,.97);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);}
+header{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;position:sticky;top:0;z-index:100;background:rgba(13,10,26,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);}
 .hlogo{display:flex;align-items:center;gap:8px;text-decoration:none;}
-.hmark{width:28px;height:20px;border-radius:6px;background:linear-gradient(135deg,var(--p3),var(--p));display:flex;align-items:center;justify-content:center;}
+.hmark{width:30px;height:22px;border-radius:9px;background:linear-gradient(135deg,var(--p3),var(--p));display:flex;align-items:center;justify-content:center;box-shadow:0 0 14px rgba(255,110,199,.4);}
 .hmark svg{fill:#fff;width:12px;height:12px;}
-.hword{font-size:15px;font-weight:900;background:linear-gradient(90deg,var(--p2),#e879f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.hbadge{background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);color:var(--p2);font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;letter-spacing:.5px;}
+.hword{font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:700;background:linear-gradient(90deg,var(--p2),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hbadge{background:rgba(255,110,199,.15);border:1px solid rgba(255,110,199,.35);color:var(--p2);font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;letter-spacing:.5px;}
 .hsearch{flex:1;max-width:210px;background:var(--s2);border:1px solid var(--border);border-radius:20px;display:flex;align-items:center;gap:6px;padding:0 11px;height:32px;transition:border-color .15s;}
-.hsearch:focus-within{border-color:var(--p);}
+.hsearch:focus-within{border-color:var(--p);box-shadow:0 0 0 3px var(--pg);}
 .hsearch svg{fill:var(--t3);width:13px;height:13px;flex-shrink:0;}
 .hsearch input{background:none;border:none;outline:none;font-size:12px;color:var(--text);width:100%;}
 .hsearch input::placeholder{color:var(--t3);}
@@ -49,47 +61,47 @@ header{height:52px;display:flex;align-items:center;justify-content:space-between
 .hbtn svg{fill:var(--t2);width:15px;height:15px;}
 
 /* HERO */
-.hero{padding:18px 14px 16px;background:linear-gradient(180deg,rgba(124,58,237,.1) 0%,transparent 100%);border-bottom:1px solid var(--border);}
+.hero{padding:18px 14px 16px;background:linear-gradient(180deg,rgba(157,109,255,.13) 0%,transparent 100%);border-bottom:1px solid var(--border);}
 .hero-row{display:flex;align-items:center;gap:12px;margin-bottom:13px;}
-.hero-av{width:50px;height:50px;border-radius:50%;flex-shrink:0;overflow:hidden;border:2px solid var(--p);box-shadow:0 0 18px var(--pg);background:linear-gradient(135deg,var(--p3),var(--p),#db2777);display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:900;color:#fff;}
+.hero-av{width:52px;height:52px;border-radius:50%;flex-shrink:0;overflow:hidden;border:2px solid var(--p);box-shadow:0 0 20px var(--pg);background:linear-gradient(135deg,var(--p3),var(--p),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;color:#fff;font-family:'Baloo 2',sans-serif;}
 .hero-av img{width:100%;height:100%;object-fit:cover;}
 .hero-inf{flex:1;min-width:0;}
-.hero-name{font-size:16px;font-weight:800;}
+.hero-name{font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:700;}
 .hero-sub{font-size:11px;color:var(--t2);margin-top:2px;}
-.hero-join{display:inline-flex;align-items:center;gap:5px;background:var(--p);color:#fff;border:none;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap;flex-shrink:0;}
+.hero-join{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(120deg,var(--p3),var(--p));color:#fff;border:none;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap;flex-shrink:0;box-shadow:0 2px 14px var(--pg);}
 .hero-join svg{fill:#fff;width:12px;height:12px;}
 .stats-row{display:flex;gap:6px;flex-wrap:wrap;}
 .stat{background:var(--s2);border:1px solid var(--border);border-radius:20px;padding:5px 11px;font-size:11px;color:var(--t2);}
-.stat b{color:var(--text);font-weight:700;}
+.stat b{color:var(--p2);font-weight:800;}
 
 /* FILTERS */
-.filters{display:flex;gap:6px;padding:10px 12px;overflow-x:auto;border-bottom:1px solid var(--border);background:var(--s1);position:sticky;top:52px;z-index:50;}
+.filters{display:flex;gap:6px;padding:10px 12px;overflow-x:auto;border-bottom:1px solid var(--border);background:var(--s1);position:sticky;top:54px;z-index:50;}
 .filters::-webkit-scrollbar{display:none;}
-.fbtn{background:var(--s2);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:11px;font-weight:600;color:var(--t2);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s;}
-.fbtn.on{background:var(--pg);border-color:var(--p);color:var(--p2);}
+.fbtn{background:var(--s2);border:1px solid var(--border);border-radius:20px;padding:6px 13px;font-size:11px;font-weight:700;color:var(--t2);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s;}
+.fbtn.on{background:linear-gradient(120deg,var(--p3),var(--p));border-color:transparent;color:#fff;box-shadow:0 2px 12px var(--pg);}
 
 /* GRID */
 .grid-section{padding:12px 12px 0;}
 .grid-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-.grid-title{font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;}
+.grid-title{font-family:'Baloo 2',sans-serif;font-size:12px;font-weight:700;color:var(--t2);letter-spacing:.4px;}
 .grid-count{font-size:11px;color:var(--t3);}
-.vgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.vgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
 @media(min-width:420px){.vgrid{grid-template-columns:repeat(3,1fr);}}
 @media(min-width:650px){.vgrid{grid-template-columns:repeat(4,1fr);}}
 
-.vcard{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;text-decoration:none;display:flex;flex-direction:column;transition:border-color .2s,transform .15s;cursor:pointer;}
-.vcard:hover{border-color:var(--p);transform:translateY(-2px);}
+.vcard{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;text-decoration:none;display:flex;flex-direction:column;transition:border-color .2s,transform .15s,box-shadow .2s;cursor:pointer;}
+.vcard:hover{border-color:var(--p);transform:translateY(-3px);box-shadow:0 8px 24px rgba(255,110,199,.18);}
 .vthumb{aspect-ratio:16/9;background:var(--s3);position:relative;overflow:hidden;}
 .vthumb img{width:100%;height:100%;object-fit:cover;display:block;}
 .vph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
 .vph svg{fill:var(--t3);width:24px;height:24px;}
-.vbadge{position:absolute;top:4px;left:4px;background:rgba(124,58,237,.88);border-radius:4px;padding:2px 5px;font-size:9px;color:#fff;font-weight:700;text-transform:uppercase;letter-spacing:.3px;}
-.vnew{position:absolute;top:4px;right:4px;background:rgba(239,68,68,.88);border-radius:4px;padding:2px 5px;font-size:9px;color:#fff;font-weight:700;}
-.voverlay{position:absolute;inset:0;background:rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .18s;}
+.vbadge{position:absolute;top:5px;left:5px;background:rgba(157,109,255,.85);border-radius:8px;padding:2px 6px;font-size:9px;color:#fff;font-weight:700;text-transform:uppercase;letter-spacing:.3px;}
+.vnew{position:absolute;top:5px;right:5px;background:rgba(255,93,143,.9);border-radius:8px;padding:2px 6px;font-size:9px;color:#fff;font-weight:700;}
+.voverlay{position:absolute;inset:0;background:rgba(13,10,26,.32);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .18s;}
 .vcard:hover .voverlay{opacity:1;}
 .voverlay svg{fill:#fff;width:28px;height:28px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5));}
-.vinf{padding:7px 8px 9px;flex:1;display:flex;flex-direction:column;gap:2px;}
-.vtitle{font-size:11.5px;font-weight:600;line-height:1.4;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.vinf{padding:8px 9px 10px;flex:1;display:flex;flex-direction:column;gap:2px;}
+.vtitle{font-size:11.5px;font-weight:700;line-height:1.4;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 .vmeta{font-size:10px;color:var(--t3);margin-top:2px;display:flex;align-items:center;gap:3px;}
 .vmeta svg{fill:var(--t3);width:9px;height:9px;}
 
@@ -114,20 +126,21 @@ header{height:52px;display:flex;align-items:center;justify-content:space-between
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
 
 /* BOTTOM NAV */
-.bnav{position:fixed;bottom:0;left:0;right:0;height:56px;background:rgba(10,10,15,.97);backdrop-filter:blur(14px);border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:center;z-index:200;padding-bottom:env(safe-area-inset-bottom);}
+.bnav{position:fixed;bottom:0;left:0;right:0;height:58px;background:rgba(13,10,26,.92);backdrop-filter:blur(14px);border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:center;z-index:200;padding-bottom:env(safe-area-inset-bottom);}
 .bn{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--t3);font-size:9.5px;font-weight:700;text-decoration:none;cursor:pointer;padding:5px 10px;transition:color .15s;}
 .bn svg{fill:var(--t3);width:19px;height:19px;transition:fill .15s;}
 .bn.on,.bn:hover{color:var(--p2);}
-.bn.on svg,.bn:hover svg{fill:var(--p2);}
+.bn.on svg,.bn:hover svg{fill:var(--p2);filter:drop-shadow(0 0 6px rgba(255,110,199,.6));}
 </style>
 </head>
 <body>
+<div id="petals"></div>
 
 <div id="boot">
   <div class="boot-mark"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
   <div class="boot-name">ALYA Tube</div>
   <div class="boot-bar"><div class="boot-fill" id="bfill"></div></div>
-  <div class="boot-sub">18+ Content Platform</div>
+  <div class="boot-sub">✨ Loading your anime vault…</div>
 </div>
 
 <div id="app">
@@ -204,19 +217,37 @@ header{height:52px;display:flex;align-items:center;justify-content:space-between
 
 <script>
 const tg = window.Telegram?.WebApp;
-if (tg) { tg.ready(); tg.expand(); tg.setHeaderColor('#0a0a0f'); tg.setBackgroundColor('#0a0a0f'); }
+if (tg) { tg.ready(); tg.expand(); tg.setHeaderColor('#0d0a1a'); tg.setBackgroundColor('#0d0a1a'); }
 
+// ── config ─────────────────────────────────────────────────────
+// Point this at your VPS API (see bot.py WEB_HOST/WEB_PORT). Can be
+// overridden per-link with ?api=https://your.domain — handy for testing.
+const DEFAULT_API_BASE = 'http://13.53.46.42:8080'; // 👈 EDIT ME
 const P       = new URLSearchParams(location.search);
-const BOT_TK  = P.get('bot')    || '';
-const OWNER   = P.get('owner')  || '';
-const CATMSG  = P.get('catmsg') || '';
-const CATALOG_URL = 'https://rishavhu6976.github.io/alyatube/catalog.json';
+const API_BASE = (P.get('api') || DEFAULT_API_BASE).replace(/\/$/, '');
+const BOT_USERNAME = 'cornpastebot'; // 👈 EDIT ME (used for bot deep links)
 
-let BOT_USER = 'alyabot';
 let allItems = [], currentFilter = 'all';
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// ── sakura petals ──────────────────────────────────────────────
+(function spawnPetals(){
+  const wrap = $('petals');
+  const emojis = ['🌸','✨','🌷'];
+  for (let i = 0; i < 16; i++) {
+    const p = document.createElement('span');
+    p.className = 'petal';
+    p.textContent = emojis[i % emojis.length];
+    p.style.left = Math.random()*100 + '%';
+    p.style.setProperty('--drift', (Math.random()*60-30) + 'px');
+    p.style.animationDuration = (10 + Math.random()*10) + 's';
+    p.style.animationDelay = (Math.random()*14) + 's';
+    p.style.fontSize = (10 + Math.random()*10) + 'px';
+    wrap.appendChild(p);
+  }
+})();
 
 // ── toast ──────────────────────────────────────────────────────
 let _tt;
@@ -227,7 +258,7 @@ function toast(msg, ms=2200) {
 
 // ── boot ───────────────────────────────────────────────────────
 function hideBoot() {
-  setTimeout(()=>{ $('boot').classList.add('fade'); setTimeout(()=>$('boot').style.display='none',400); }, 1000);
+  setTimeout(()=>{ $('boot').classList.add('fade'); setTimeout(()=>$('boot').style.display='none',400); }, 700);
 }
 
 // ── skeletons ──────────────────────────────────────────────────
@@ -264,23 +295,6 @@ function openLink(e, link) {
   else window.open(link, '_blank');
 }
 
-// ── thumb cache ────────────────────────────────────────────────
-const thumbCache = {};
-async function resolveThumb(fileId) {
-  if (!fileId || !BOT_TK) return '';
-  if (thumbCache[fileId]) return thumbCache[fileId];
-  try {
-    const r = await fetch(`https://api.telegram.org/bot${BOT_TK}/getFile?file_id=${encodeURIComponent(fileId)}`);
-    const j = await r.json();
-    if (j.ok) {
-      const url = `https://api.telegram.org/file/bot${BOT_TK}/${j.result.file_path}`;
-      thumbCache[fileId] = url;
-      return url;
-    }
-  } catch {}
-  return '';
-}
-
 // ── render grid ────────────────────────────────────────────────
 function renderGrid() {
   let items = allItems;
@@ -302,11 +316,13 @@ function renderGrid() {
   const ph = `<div class="vph"><svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg></div>`;
 
   $('vgrid').innerHTML = items.map(item => {
-    const link = `https://t.me/${BOT_USER}?start=file_${item.token}`;
+    const link = `https://t.me/${BOT_USERNAME}?start=file_${item.token}`;
     const date = item.date ? new Date(item.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) : '';
     const typeLbl = (item.type||'file').replace('_',' ');
-    return `<a class="vcard" href="${link}" data-thumb="${esc(item.thumb||'')}" data-token="${esc(item.token)}" onclick="openLink(event,'${link}')">
-      <div class="vthumb" id="th-${esc(item.token)}">${ph}
+    const thumbSrc = item.thumb ? API_BASE + item.thumb : '';
+    return `<a class="vcard" href="${link}" data-token="${esc(item.token)}" onclick="openLink(event,'${link}')">
+      <div class="vthumb" id="th-${esc(item.token)}">
+        ${thumbSrc ? `<img src="${thumbSrc}" loading="lazy" alt="" onerror="this.remove()"/>` : ph}
         <span class="vbadge">${esc(typeLbl)}</span>
         ${isNew(item.date) ? '<span class="vnew">NEW</span>' : ''}
         <div class="voverlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
@@ -319,19 +335,6 @@ function renderGrid() {
       </div>
     </a>`;
   }).join('');
-
-  // Lazy-load thumbnails
-  items.forEach(async item => {
-    if (!item.thumb) return;
-    const url = await resolveThumb(item.thumb);
-    if (!url) return;
-    const el = $('th-' + item.token);
-    if (!el) return;
-    const img = document.createElement('img');
-    img.src = url; img.loading = 'lazy'; img.alt = '';
-    img.onerror = function() { this.remove(); };
-    el.insertBefore(img, el.firstChild);
-  });
 }
 
 // ── stats ──────────────────────────────────────────────────────
@@ -346,18 +349,10 @@ function fillStats(items) {
 
 // ── load catalog ───────────────────────────────────────────────
 async function loadCatalog() {
-  // Try GitHub Pages catalog.json first (set by bot via /pushcatalog)
-  try {
-    const r = await fetch(CATALOG_URL + '?t=' + Date.now());
-    if (r.ok) {
-      const j = await r.json();
-      return j.files || [];
-    }
-  } catch {}
-
-  // Fallback: if bot token + catmsg available, try to read catalog from owner DM
-  // (won't work for private chats via Bot API, but kept as placeholder)
-  return null;
+  const r = await fetch(API_BASE + '/api/catalog?t=' + Date.now());
+  if (!r.ok) throw new Error('API responded ' + r.status);
+  const j = await r.json();
+  return j.files || [];
 }
 
 // ── init ───────────────────────────────────────────────────────
@@ -366,14 +361,6 @@ async function init() {
   showSkels(8);
 
   try {
-    if (BOT_TK) {
-      try {
-        const r = await fetch(`https://api.telegram.org/bot${BOT_TK}/getMe`);
-        const j = await r.json();
-        if (j.ok) BOT_USER = j.result.username;
-      } catch {}
-    }
-
     const files = await loadCatalog();
 
     if (!files || files.length === 0) {
@@ -384,16 +371,9 @@ async function init() {
       $('stat-views').textContent = '0';
       $('grid-count').textContent = '0 items';
       $('vgrid').innerHTML = `<div class="empty">
-        <div class="empty-ico">⚙️</div>
-        <div class="empty-ttl">Catalog not set up yet</div>
-        <div class="empty-sub">
-          Admin needs to set a GitHub token and run <code>/pushcatalog</code> in the bot.<br><br>
-          Steps:<br>
-          1. Get a GitHub PAT (repo scope)<br>
-          2. Send <code>/setgithub YOUR_TOKEN</code> to the bot<br>
-          3. Send <code>/pushcatalog</code><br>
-          4. Reload this page
-        </div>
+        <div class="empty-ico">🌙</div>
+        <div class="empty-ttl">No content yet</div>
+        <div class="empty-sub">Content will appear here the moment the admin uploads a file to the bot.</div>
       </div>`;
       return;
     }
@@ -420,8 +400,8 @@ async function init() {
     $('stat-views').textContent = '0';
     $('vgrid').innerHTML = `<div class="empty">
       <div class="empty-ico">😞</div>
-      <div class="empty-ttl">Failed to load</div>
-      <div class="empty-sub">${esc(e.message)}</div>
+      <div class="empty-ttl">Couldn't reach the API</div>
+      <div class="empty-sub">${esc(e.message)}<br><br>Check that <code>API_BASE</code> in this page points to your running backend.</div>
     </div>`;
   }
 }
